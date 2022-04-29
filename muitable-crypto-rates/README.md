@@ -1,45 +1,23 @@
-# building a real-time crypto currency info table with MUI(material-ui) data grid and coinmarket cap API
+# building a real-time crypto currency info table with MUI(material-ui) Table and coinmarket cap API
 
 we are going to build a real-time crypto table that is responsive and would show lots of information about every crypto currency using the coinmarket cap `API`.we are going to build a simple express backend to fetch the informatin from coinmarket cap and cach the data with `Redis` and fetch them on a specific time period avoiding too much api calls
 
 ## prequsite
 
-make a folder and call it `crypto-table`
-windows:
+make a folder and call it `crypto-table` open your treminal and run the commands:
+powershell:
 
-```bash
+```powershell
 mkdir crypto-table;cd crypto-table;code .
 ```
 
-MacOS:
+bash:
 
 ```bash
-mkdir cypto-table && cd crypto && code .
+mkdir cypto-table && cd crypto-table && code .
 ```
 
 that would make a folder and open the vscode
-
-<!-- ### frontend
-
-we use `create-react-app` to install React
-
-```
-npx create-react-app frontend
-```
-
-after finishing the React part install other depencies:
-
-```
-npm install @mui/material @emotion/styled @emotion/react
-```
-
-### backend
-
-we use `nodemon` along express to restart oureserver whenever we change something
-
-```
-npm install express nodemon axios
-``` -->
 
 ### frontend
 
@@ -60,13 +38,13 @@ emotion packages are necceassary for `mui`
 
 ### backend
 
-our express backend will be a simple server just to fetch data from the coinmarket cap `API`.head over to root folder(`crypto-table`)and make a folder called `backend`.inside this folder open a terminal and install `express` and `axios`:
+our express backend will be a simple server just to fetch data from the coinmarket cap `API`.head over to root folder(`crypto-table`)and make a folder names `backend`.inside this folder open a terminal and install `express` and `axios`:
 
 ```bash
 npm install express nodemon axios dotenv
 ```
 
-now we have insalled packages we need to build the project you should have folder structure like this:
+now we have insalled packages we need to build the project you should have a folder structure like this:
 
 ```dir
 |-- crypto-table
@@ -91,7 +69,7 @@ visit the [coinmarketcap](https://coinmarketcap.com/api/) website:
 hit the `GET YOUR API KEY NOW` button.sign up on the website an you need to verify your email.after finish signing up and confirming your email address it wil redirect you to your account page
 if you didn't redirect to the account page visit this [link](https://coinmarketcap.com/api/) and login.
 
-![account page](./assets/pro.coinmarketcap.com_account%20(1).png)
+![account page](<./assets/pro.coinmarketcap.com_account%20(1).png>)
 (it has a generous free plan with 333 calls a day)
 
 when you move the mouse over the API key section it shows a button that copy the key to clipboard.now you are all good to go to the next section
@@ -114,11 +92,11 @@ const express = require('express');
 const app = express();
 app.use(express.json());
 app.get('/', (req, res) => {
-   res.send('GET REQUEST');
+  res.send('GET REQUEST');
 });
 
 app.listen(400, () => {
-   console.log('server is running');
+  console.log('server is running');
 });
 ```
 
@@ -137,26 +115,26 @@ create an instance of `axios` with `basicURL` and your apikey.
 
 ```js
 const api = axios.create({
-   method: 'GET',
-   baseURL: 'https://pro-api.coinmarketcap.com/v1/cryptocurrency',
-   headers: {
-      'X-CMC_PRO_API_KEY': process.env.COINMARKETCAP_API_KEY,
-      Accept: 'application/json',
-      'Accept-Encoding': 'deflate, gzip',
-   },
+  method: 'GET',
+  baseURL: 'https://pro-api.coinmarketcap.com/v1/cryptocurrency',
+  headers: {
+    'X-CMC_PRO_API_KEY': process.env.COINMARKETCAP_API_KEY,
+    Accept: 'application/json',
+    'Accept-Encoding': 'deflate, gzip',
+  },
 });
 ```
 
 the `X-CMC_PRO_API_KEY` header is what coinmarketcap need for the authentication.
-call the api inside the `get` request
+set the rout as `/api`.now call the api inside the `get` request
 
 ```js
-app.get('/', (req, res) => {
-   api('/listings/latest?limit=20')
-      .then(value => value.data)
-      .then(data => {
-         res.json(data);
-      });
+app.get('/api', (req, res) => {
+  api('/listings/latest?limit=20')
+    .then(value => value.data)
+    .then(data => {
+      res.json(data);
+    });
 });
 ```
 
@@ -175,22 +153,22 @@ const app = express();
 app.use(express.json());
 
 const api = axios.create({
-   method: 'GET',
-   baseURL: 'https://pro-api.coinmarketcap.com/',
-   headers: {
-      'X-CMC_PRO_API_KEY': process.env.COINMARKETCAP_API_KEY,
-      Accept: 'application/json',
-      'Accept-Encoding': 'deflate, gzip',
-   },
+  method: 'GET',
+  baseURL: 'https://pro-api.coinmarketcap.com/',
+  headers: {
+    'X-CMC_PRO_API_KEY': process.env.COINMARKETCAP_API_KEY,
+    Accept: 'application/json',
+    'Accept-Encoding': 'deflate, gzip',
+  },
 });
 app.get('/api', (req, res) => {
-   api('/v1/cryptocurrency/listings/latest?limit=20')
-      .then(value => value.data)
-      .then(data => res.json(data));
+  api('/v1/cryptocurrency/listings/latest?limit=20')
+    .then(value => value.data)
+    .then(data => res.json(data));
 });
 
 app.listen(4000, () => {
-   console.log('epress server');
+  console.log('epress server');
 });
 ```
 
@@ -198,11 +176,11 @@ the limit at the end gives us the first 20 element of the list.by default it ret
 
 ## building the frontend
 
-inside the src folder create a file and call it `hooks.js`.we'll use this file to implement our custom hook.
+inside the src folder create a file and named `hooks.js`.we'll use this file to implement our custom hook.
 
 <!-- our table has couple of parts.the most important and  -->
 
-create a new file and call it `App.js`
+create a new file and named `App.js`
 we want to use the dark theme for our table.the default theme mode on `mui` is light so we need to create a theme and set it to dark mode.
 import all necessary dependencies inside the `App.js`:
 
@@ -215,10 +193,11 @@ import { createTheme, ThemeProvider } from '@mui/material';
 create a theme with dark mode :
 
 ```js
+//App.js
 const theme = createTheme({
-   palette: {
-      mode: 'dark',
-   },
+  palette: {
+    mode: 'dark',
+  },
 });
 ```
 
@@ -228,101 +207,104 @@ now use the `ThemeProvider` to inject the dark mode.your `App.js` code should lo
 import { createTheme, ThemeProvider } from '@mui/material';
 import React from 'react';
 const theme = createTheme({
-   palette: {
-      mode: 'dark',
-   },
+  palette: {
+    mode: 'dark',
+  },
 });
 function App() {
-   return (
-      <ThemeProvider theme={theme}>
-         <div>test</div>
-      </ThemeProvider>
-   );
+  return (
+    <ThemeProvider theme={theme}>
+      <div>test</div>
+    </ThemeProvider>
+  );
 }
 
 export default App;
 ```
 
-now use the `npm start` command to spin up the react server.visit `localhost:3000`you should see a text on the screen says `test`.
+use the `npm start` command to spin up the react server.visit `localhost:3000`you should see a text on the screen says `test`.
 we are all set to build our `Table` component.
 
 ### Table component
 
-we'll use the `Table` component of `mui`.under the hood `mui` use the native table element for this component.create a file and call it `Table.js`.create another file call it `CoinBody.js`.that's where the table body resides.first of all import the neccessary components:
+we'll use the `Table` component of `mui`.under the hood `mui` use the native table element for this component.create a file and call it `Table.js`.create another file named `CoinBody.js`.that's where the table body resides.first of all import the neccessary components:
 
 ```js
 import React, { useEffect, useState } from 'react';
 import TableContainer from '@mui/material/TableContainer';
 import Table from '@mui/material/Table';
 import {
-   Fade,
-   Paper,
-   Skeleton,
-   TableBody,
-   TableCell,
-   TableHead,
-   TablePagination,
-   TableRow,
-   Typography,
+  Fade,
+  Paper,
+  Skeleton,
+  TableBody,
+  TableCell,
+  TableHead,
+  TablePagination,
+  TableRow,
+  Typography,
 } from '@mui/material';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import CoinBody from './CoinBody';
 ```
 
-let's see the code and we talk about every step:
+in this example we'll use 8 colums of data.let's see the code and we talk about every step:
 
 ```js
 //Table.js
 export default function CoinTable() {
-   return (
-      <Paper>
-         <TableContainer>
-            <Table sx={{ minWidth: 700, '& td': { fontWeight: 700 } }}>
-               <TableHead>
-                  <TableRow>
-                     <TableCell>#</TableCell>
-                     <TableCell colSpan={2}>name</TableCell>
-                     <TableCell align="right">Price</TableCell>
-                     <TableCell align="right">24h %</TableCell>
-                     <TableCell align="right">7d %</TableCell>
-                     <TableCell align="right">Market Cap</TableCell>
-                     <TableCell align="right">Volume(24h)</TableCell>
-                     <TableCell align="right">Circulating supply</TableCell>
-                  </TableRow>
-               </TableHead>
-               <TableBody>
-                  <CoinBody />
-               </TableBody>
-            </Table>
-         </TableContainer>
-         <TablePagination
-            component={'div'}
-            rowsPerPageOptions={[5, 10, 20]}
-            rowsPerPage={5}
-            onRowsPerPageChange={e => ''}
-            count={20}
-            page={0}
-            onPageChange={(e, newPage) => ''}
-         />
-      </Paper>
-   );
+  return (
+    <Paper>
+      <TableContainer>
+        <Table sx={{ minWidth: 700, '& td': { fontWeight: 700 } }}>
+          <TableHead>
+            <TableRow>
+              <TableCell>#</TableCell>
+              <TableCell>name</TableCell>
+              <TableCell align="right">Price</TableCell>
+              <TableCell align="right">24h %</TableCell>
+              <TableCell align="right">7d %</TableCell>
+              <TableCell align="right">Market Cap</TableCell>
+              <TableCell align="right">Volume(24h)</TableCell>
+              <TableCell align="right">Circulating supply</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            <CoinBody />
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <TablePagination
+        component={'div'}
+        rowsPerPageOptions={[5, 10, 20]}
+        rowsPerPage={5}
+        onRowsPerPageChange={e => ''}
+        count={20}
+        page={0}
+        onPageChange={(e, newPage) => ''}
+      />
+    </Paper>
+  );
 }
 ```
 
 ```js
 //CoinBody.js
 export default function CoinBody() {
-   return (
-      <TableRow>
-         <TableCell>bitcoin</TableCell>
-         <TableCell align="right">$42000</TableCell>
-         <TableCell align="right">3%</TableCell>
-         <TableCell align="right">2%</TableCell>
-         <TableCell align="right">$19200000</TableCell>
-         <TableCell align="right">$19200000</TableCell>
-      </TableRow>
-   );
+  return (
+    <TableRow>
+      <TableCell>1</TableCell>
+      <TableCell align="right">bitcoin</TableCell>
+      <TableCell align="right">$42000</TableCell>
+      <TableCell align="right">1%</TableCell>
+      <TableCell align="right">2%</TableCell>
+      <TableCell align="right">$2000000</TableCell>
+      <TableCell align="right">$3000000</TableCell>
+      <TableCell align="right">$19200000</TableCell>
+      <TableCell align="right">$19200000</TableCell>
+    </TableRow>
+  );
 }
 ```
 
@@ -345,45 +327,45 @@ open the `hooks.js` file.let's build a custom hook that fetch data from api and 
 //hooks.js
 
 function useCoinMarket() {
-   const [state, setState] = useState({ data: [], isLoading: true });
-   const updateState = data => {
-      setState(state => ({
-         data: data ? data : state.data,
-         isLoading: false,
-      }));
-   };
-   async function init() {
-      try {
-         const res = await fetch('/api');
-         const data = await res.json();
-         updateState(data);
-      } catch (err) {
-         console.log(err);
-      }
-   }
-   useEffect(() => {
+  const [state, setState] = useState({ data: [], isLoading: true });
+  const updateState = data => {
+    setState(state => ({
+      data: data ? data : state.data,
+      isLoading: false,
+    }));
+  };
+  async function init() {
+    try {
+      const res = await fetch('/api');
+      const data = await res.json();
+      updateState(data);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+  useEffect(() => {
+    init();
+    const id = setInterval(() => {
       init();
-      const id = setInterval(() => {
-         init();
-      }, 1 * 60 * 1000);
-      return () => clearInterval(id);
-   }, []);
-   return state;
+    }, 1 * 60 * 1000);
+    return () => clearInterval(id);
+  }, []);
+  return state;
 }
 ```
 
-notice we have set two fields for the state `data`,`isLoading`.the `isLoading` is true initaly so the table would show a skeleton and when the promise is fulfilled the data we set the `isLoading` to false.
+notice we have set two fields for the state `data`,`isLoading`.the `isLoading` is true initaly so the table would show a skeleton and when the promise is fulfilled the data, we set the `isLoading` to false.
 we use `setInterval` to call init every 1 minute to update the table.
 
-> _this is a side note in regard of different approaches toward calling a function immediately and setting a time interval on the callee, you can skip this part if you want._
-> there other interesting ways to achieve immediate calling a function and setting a time interval:
+> _this is a side note in regards of different approaches toward calling a function immediately and setting a time interval on the callee, you can skip this part if you want._
+> there other interesting ways to achieve immediately calling a function and setting a time interval:
 >
 > 1.using a setTimeout:
 >
 > ```js
 > function mysetInterval(func, time) {
->    func();
->    return setTimeout(func, 1 * 60 * 1000);
+>   func();
+>   return setTimeout(func, time);
 > }
 > ```
 >
@@ -393,11 +375,11 @@ we use `setInterval` to call init every 1 minute to update the table.
 >
 > ```js
 > setInterval(
->    (function mysetInteravl() {
->       init();
->       return mysetInterval;
->    })(),
->    1 * 60 * 1000
+>   (function mysetInteravl() {
+>     init();
+>     return mysetInterval;
+>   })(),
+>   1 * 60 * 1000 //you can specify your time
 > );
 > ```
 >
@@ -412,98 +394,100 @@ import { useCoinMarket } from './hooks';
 //.
 //.
 export default function CoinTable() {
-   const { data, isLoading } = useCoinMarket();
-   const [rowsPerPage, setRowsPerPage] = useState(10);
-   const [page, setPage] = useState(0);
-   return (
-      <Paper>
-         <TableContainer>
-            <Table sx={{ minWidth: 700, '& td': { fontWeight: 700 } }}>
-               <TableHead>
-                  <TableRow>
-                     <TableCell>#</TableCell>
-                     <TableCell colSpan={2}>name</TableCell>
-                     <TableCell align="right">Price</TableCell>
-                     <TableCell align="right">24h %</TableCell>
-                     <TableCell align="right">7d %</TableCell>
-                     <TableCell align="right">Market Cap</TableCell>
-                     <TableCell align="right">Volume(24h)</TableCell>
-                     <TableCell align="right">Circulating supply</TableCell>
-                  </TableRow>
-               </TableHead>
-               <TableBody>
-                  <CoinBody data={data} rowsPerpage={rowsPerpage} page={page} />
-               </TableBody>
-            </Table>
-         </TableContainer>
-         <TablePagination
-            component={'div'}
-            rowsPerPageOptions={[5, 10, 20]}
-            rowsPerPage={5}
-            count={data.lenght}
-            onRowsPerPageChange={e => {
-               setRowsPerPage(parseInt(e.target.value));
-               setPage(0);
-            }}
-            page={page}
-            onPageChange={(e, newPage) => {
-               setPage(newPage);
-            }}
-         />
-      </Paper>
-   );
+  const { data, isLoading } = useCoinMarket();
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [page, setPage] = useState(0);
+  return (
+    <Paper>
+      <TableContainer>
+        <Table sx={{ minWidth: 700, '& td': { fontWeight: 700 } }}>
+          <TableHead>
+            <TableRow>
+              <TableCell>#</TableCell>
+              <TableCell colSpan={2}>name</TableCell>
+              <TableCell align="right">Price</TableCell>
+              <TableCell align="right">24h %</TableCell>
+              <TableCell align="right">7d %</TableCell>
+              <TableCell align="right">Market Cap</TableCell>
+              <TableCell align="right">Volume(24h)</TableCell>
+              <TableCell align="right">Circulating supply</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            <CoinBody data={data} rowsPerpage={rowsPerpage} page={page} />
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <TablePagination
+        component={'div'}
+        rowsPerPageOptions={[5, 10, 20]}
+        rowsPerPage={5}
+        count={data.lenght}
+        onRowsPerPageChange={e => {
+          setRowsPerPage(parseInt(e.target.value));
+          setPage(0);
+        }}
+        page={page}
+        onPageChange={(e, newPage) => {
+          setPage(newPage);
+        }}
+      />
+    </Paper>
+  );
 }
 ```
 
-on `CoinTableBody` component we need to slice the data base on the number of `page` and `rowsPerPage` the da
+on `CoinTableBody` component we need to extract proportion of the data based on the number of `page` and `rowsPerPage`.`isLoading` parameter is used to show a skeleton while data is loading.insdie `CoinBody` make a componenet named `BodySkeleton`.pass `rowsPerPAge` and number of heads.
 
 ```js
 //CoinBody.js
 export default function CoinTableBody({ data, rowsPerpage, page }) {
-   const dataSliced = data.slice(page * rowsPerPage, (page + 1) * rowsPerPage);
-   return (
-      <TableBody>
-         {isLoading ? (
-            <BodySkeleton rows={rowsPerPage} heads={8} />
-         ) : (
-            dataSliced.map(row => (
-               <TableRow>
-                  <TableCell>bitcoin</TableCell>
-                  <TableCell align="right">$42000</TableCell>
-                  <TableCell align="right">3%</TableCell>
-                  <TableCell align="right">2%</TableCell>
-                  <TableCell align="right">$19200000</TableCell>
-                  <TableCell align="right">$19200000</TableCell>
-               </TableRow>
-            ))
-         )}
-      </TableBody>
-   );
+  const dataSliced = data.slice(page * rowsPerPage, (page + 1) * rowsPerPage);
+  return (
+    <TableBody>
+      {isLoading ? (
+        <BodySkeleton rows={rowsPerPage} heads={8} />
+      ) : (
+        dataSliced.map(row => (
+          <TableRow>
+            <TableCell>bitcoin</TableCell>
+            <TableCell align="right">$42000</TableCell>
+            <TableCell align="right">3%</TableCell>
+            <TableCell align="right">2%</TableCell>
+            <TableCell align="right">$19200000</TableCell>
+            <TableCell align="right">$19200000</TableCell>
+          </TableRow>
+        ))
+      )}
+    </TableBody>
+  );
 }
 ```
+
+first we make an arrya based on the `rows` and `head` props to map over them and show the skeleton
 
 ```js
 //CoinBody.js
 
 const BodySkeleton = ({ rows, heads }) => {
-   const rowArray = Array(rows).fill(null);
-   const cellArray = Array(heads).fill(null);
-   return rowArray.map((_, index) => (
-      <TableRow key={index}>
-         {cellArray.map((_, index) => (
-            <TableCell key={index} align={index === 1 ? 'left' : 'right'}>
-               {index === 1 ? (
-                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                     <Skeleton variant="circular" width={25} height={25} sx={{ mr: 1 }} />
-                     <Skeleton width={100} />
-                  </Box>
-               ) : (
-                  <Skeleton />
-               )}
-            </TableCell>
-         ))}
-      </TableRow>
-   ));
+  const rowArray = Array(rows).fill(null);
+  const cellArray = Array(heads).fill(null);
+  return rowArray.map((_, index) => (
+    <TableRow key={index}>
+      {cellArray.map((_, index) => (
+        <TableCell key={index} align={index === 1 ? 'left' : 'right'}>
+          {index === 1 ? (
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Skeleton variant="circular" width={25} height={25} sx={{ mr: 1 }} />
+              <Skeleton width={100} />
+            </Box>
+          ) : (
+            <Skeleton />
+          )}
+        </TableCell>
+      ))}
+    </TableRow>
+  ));
 };
 ```
 
@@ -511,16 +495,16 @@ const BodySkeleton = ({ rows, heads }) => {
 //CoinBody.js
 
 export default function CoinTableBody({ data, rowsPerpage, page }) {
-   const dataSliced = data.slice(page * rowsPerPage, (page + 1) * rowsPerPage);
-   return (
-      <TableBody>
-         {isLoading ? (
-            <BodySkeleton rows={rowsPerPage} heads={8} />
-         ) : (
-            dataSliced.map(row => <BodyRow row={row} />)
-         )}
-      </TableBody>
-   );
+  const dataSliced = data.slice(page * rowsPerPage, (page + 1) * rowsPerPage);
+  return (
+    <TableBody>
+      {isLoading ? (
+        <BodySkeleton rows={rowsPerPage} heads={8} />
+      ) : (
+        dataSliced.map(row => <BodyRow row={row} />)
+      )}
+    </TableBody>
+  );
 }
 ```
 
@@ -605,47 +589,47 @@ export default functin BodyRow({ row }) {
 ```js
 //BodyRow.js
 const RenderPercentage = ({ num }) => {
-   return num > 0 ? (
-      <Box
-         display="flex"
-         justifyContent="flex-end"
-         alignItems="center"
-         color={'success.main'}
-      >
-         <ArrowDropUpIcon color={'success'} />
-         <span>{num}%</span>
-      </Box>
-   ) : (
-      <Box
-         display={'flex'}
-         justifyContent="flex-end"
-         alignItems="center"
-         color={'error.main'}
-      >
-         <ArrowDropDownIcon />
-         <span>{num.replace('-', '')}</span>
-      </Box>
-   );
+  return num > 0 ? (
+    <Box
+      display="flex"
+      justifyContent="flex-end"
+      alignItems="center"
+      color={'success.main'}
+    >
+      <ArrowDropUpIcon color={'success'} />
+      <span>{num}%</span>
+    </Box>
+  ) : (
+    <Box
+      display={'flex'}
+      justifyContent="flex-end"
+      alignItems="center"
+      color={'error.main'}
+    >
+      <ArrowDropDownIcon />
+      <span>{num.replace('-', '')}</span>
+    </Box>
+  );
 };
 ```
 
 ```js
 //BodyRow.js
 function numberFormat(num, style = 'currency', currency = 'USD') {
-   let temp = 2;
-   if (num < 1 && num > 0.0001) {
-      temp = 4;
-   }
-   if (num < 0.0001) {
-      temp = 8;
-   }
-   let curr = new Intl.NumberFormat('en-US', {
-      style,
-      currency,
-      maximumFractionDigits: temp,
-      minimumFractionDigits: 2,
-   }).format(num);
+  let temp = 2;
+  if (num < 1 && num > 0.0001) {
+    temp = 4;
+  }
+  if (num < 0.0001) {
+    temp = 8;
+  }
+  let curr = new Intl.NumberFormat('en-US', {
+    style,
+    currency,
+    maximumFractionDigits: temp,
+    minimumFractionDigits: 2,
+  }).format(num);
 
-   return curr;
+  return curr;
 }
 ```
