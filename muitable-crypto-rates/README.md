@@ -118,7 +118,7 @@ const api = axios.create({
   method: 'GET',
   baseURL: 'https://pro-api.coinmarketcap.com/v1/cryptocurrency',
   headers: {
-    'X-CMC_PRO_API_KEY': process.env.COINMARKETCAP_API_KEY,
+    'X-CMC_PRO_API_KEY': `${process.env.COINMARKETCAP_API_KEY}`,
     Accept: 'application/json',
     'Accept-Encoding': 'deflate, gzip',
   },
@@ -141,7 +141,7 @@ app.get('/api', (req, res) => {
 visit the `localhost:4000` you should see a list of crypto currencies
 
 ![list of currencies](./assets/localhost_4000_api.png)
-(I am using the `json-viewer` extension.this is the [link](https://chrome.google.com/webstore/detail/json-viewer/gbmdgpbipfallnflgajpaliibnhdgobh) to the chrome web store.)
+(I am using the `json-viewer` extension.this is the [link](https://chrome.google.com/webstore/detail/json-viewer/gbmdgpbipfallnflgajpaliibnhdgobh) you can download the extension from webstore.)
 
 now we have all we need on server side.your `server.js` code should look like this:
 
@@ -172,11 +172,11 @@ app.listen(4000, () => {
 });
 ```
 
-the limit at the end gives us the first 20 element of the list.by default it returns a list of 100 elements.
+the limit at the end gives us the first 20 element of the list.by default it returns a list of 100 elements.there is a limit to free plan on coinmarket api although it is a generous free plan,it is better to call the api on server every couple of minutes and cache the data(like in a redis database) and send back the cache value to the user.we wont get to the details on caching details.(there are numerous articles online)
 
 ## building the frontend
 
-inside the src folder create a file and named `hooks.js`.we'll use this file to implement our custom hook.
+inside the src folder create a file named `hooks-helpers.js`.we'll use this file to implement our custom hook and helpers.
 
 <!-- our table has couple of parts.the most important and  -->
 
@@ -321,10 +321,10 @@ right now our mark up is finished we have the look and it's time to introduce st
 
 #### custom hook
 
-open the `hooks.js` file.let's build a custom hook that fetch data from api and retrun the data and a `isLoading` parameter.
+open the `hooks-helpers.js` file.let's build a custom hook that fetch data from api and retrun the data and a `isLoading` parameter.
 
 ```js
-//hooks.js
+//hooks-helpers.js
 
 function useCoinMarket() {
   const [state, setState] = useState({ data: [], isLoading: true });
@@ -389,7 +389,7 @@ now import the custom hook inside the `table.js` file.add two state hooks for `p
 pass them to `onRowsPerPageChange` and `onPageChange`.notice the `onPageChange` props callback have two arguments.the second argument is the new page sets by the user.pass `data`,`rowsPerPage`,`page` to `CoinBody` component
 
 ```js
-import { useCoinMarket } from './hooks';
+import { useCoinMarket } from './hooks-helpers';
 //other imports
 //.
 //.
