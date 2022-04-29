@@ -3,7 +3,7 @@ import { SwitchTransition } from 'react-transition-group';
 import { Fade, TableCell, TableRow, Box, Avatar } from '@mui/material';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import { numberFormat } from './other';
+import { numberFormat } from './hooks-helpers';
 import bit from './assets/1.png';
 
 const RenderPercentage = ({ num }) => {

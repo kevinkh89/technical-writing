@@ -228,6 +228,7 @@ we are all set to build our `Table` component.
 ### Table component
 
 we'll use the `Table` component of `mui`.under the hood `mui` use the native table element for this component.create a file and call it `Table.js`.create another file named `CoinBody.js`.that's where the table body resides.first of all import the neccessary components:
+(we'll show the skeleton component while the data is loading)
 
 ```js
 import React, { useEffect, useState } from 'react';
@@ -464,7 +465,7 @@ export default function CoinTableBody({ data, rowsPerpage, page }) {
 }
 ```
 
-first we make an arrya based on the `rows` and `head` props to map over them and show the skeleton
+first we make an array based on the `rows` and `head` props to map over them and show the skeleton every thing is straight forward
 
 ```js
 //CoinBody.js
