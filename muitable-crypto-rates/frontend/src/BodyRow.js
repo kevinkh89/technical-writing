@@ -37,7 +37,8 @@ const BodyRow = memo(({ row }) => {
   const percent_24 = USD.percent_change_24h.toFixed(2);
   const percent_7d = USD.percent_change_7d.toFixed(2);
   const circulating_supply = numberFormat(row.circulating_supply, 'decimal');
-
+  const marketCap = numberFormat(USD.market_cap);
+  const volume_24 = numberFormat(USD.volume_24h);
   return (
     <TableRow sx={{ '& td': { width: 20 } }}>
       <TableCell
@@ -95,9 +96,9 @@ const BodyRow = memo(({ row }) => {
           </TableCell>
         </Fade>
       </SwitchTransition>
-      <TableCell align="right">{numberFormat(USD.market_cap)}</TableCell>
+      <TableCell align="right">{marketCap}</TableCell>
 
-      <TableCell align="right">{numberFormat(USD.volume_24h)}</TableCell>
+      <TableCell align="right">{volume_24}</TableCell>
       <TableCell align="right">
         {circulating_supply}&nbsp;{row.symbol}
       </TableCell>

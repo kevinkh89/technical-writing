@@ -80,7 +80,7 @@ inside the `backend` folder make two files : `server.js` and `.env`.
 open the `.env` file, make a variabale and paste your api key like so:
 
 ```env
-COINMARKETCAP_API=(your_api_key)
+COINMARKETCAP_API='(your_api_key)'
 ```
 
 now let's build our express server.
@@ -118,7 +118,7 @@ const api = axios.create({
   method: 'GET',
   baseURL: 'https://pro-api.coinmarketcap.com/v1/cryptocurrency',
   headers: {
-    'X-CMC_PRO_API_KEY': `${process.env.COINMARKETCAP_API_KEY}`,
+    'X-CMC_PRO_API_KEY': process.env.COINMARKETCAP_API_KEY,
     Accept: 'application/json',
     'Accept-Encoding': 'deflate, gzip',
   },
@@ -395,7 +395,6 @@ import { useCoinMarket } from './hooks-helpers';
 //.
 //.
 export default function CoinTable() {
-  const { data, isLoading } = useCoinMarket();
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(0);
   return (
@@ -415,7 +414,7 @@ export default function CoinTable() {
             </TableRow>
           </TableHead>
           <TableBody>
-            <CoinBody data={data} rowsPerpage={rowsPerpage} page={page} />
+            <CoinTableBody data={data} rowsPerpage={rowsPerpage} page={page} />
           </TableBody>
         </Table>
       </TableContainer>
@@ -423,7 +422,7 @@ export default function CoinTable() {
         component={'div'}
         rowsPerPageOptions={[5, 10, 20]}
         rowsPerPage={5}
-        count={data.lenght}
+        count={20}
         onRowsPerPageChange={e => {
           setRowsPerPage(parseInt(e.target.value));
           setPage(0);
@@ -442,7 +441,8 @@ on `CoinTableBody` component we need to extract proportion of the data based on 
 
 ```js
 //CoinBody.js
-export default function CoinTableBody({ data, rowsPerpage, page }) {
+export default function CoinTableBody({ rowsPerpage, page }) {
+  const { data, isLoading, update } = useCoinMarket();
   const dataSliced = data.slice(page * rowsPerPage, (page + 1) * rowsPerPage);
   return (
     <TableBody>
@@ -465,7 +465,7 @@ export default function CoinTableBody({ data, rowsPerpage, page }) {
 }
 ```
 
-first we make an array based on the `rows` and `head` props to map over them and show the skeleton every thing is straight forward
+first we make two arrays based on the `rows` and `head` props to map over them and show the skeleton
 
 ```js
 //CoinBody.js
@@ -492,10 +492,13 @@ const BodySkeleton = ({ rows, heads }) => {
 };
 ```
 
+the body would house lots of data and components so it is wise to move them into a component.make a file named `BodyRow.js` and change the `CoinTableBody` like so:
+
 ```js
 //CoinBody.js
 
-export default function CoinTableBody({ data, rowsPerpage, page }) {
+export default function CoinTableBody({ rowsPerpage, page }) {
+  const { data, isLoading, update } = useCoinMarket();
   const dataSliced = data.slice(page * rowsPerPage, (page + 1) * rowsPerPage);
   return (
     <TableBody>
@@ -509,6 +512,10 @@ export default function CoinTableBody({ data, rowsPerpage, page }) {
 }
 ```
 
+the api provides us substantial information about all aspects of crypto currency.in this example we are going to show 8 columns of information such as price,24 hours change,7 days change,ciculating supply,market cap,24h volumn(make sure to check out other properties too)
+there are not much to do in regards of processing the numbers.the percentages have fixed 2 fraction.price,market cap and curculating supply need to be fromated as a currency.
+we use the `Intl.NumberFormat` hence the `numberFormat` function(we'll get to it).
+
 ```js
 //BodyRow.js
 export default functin BodyRow({ row }) {
@@ -518,7 +525,6 @@ export default functin BodyRow({ row }) {
    const percent_24 = USD.percent_change_24h.toFixed(2);
    const percent_7d = USD.percent_change_7d.toFixed(2);
    const circulating_supply = numberFormat(row.circulating_supply, 'decimal');
-
    return (
       <TableRow sx={{ '& td': { width: 20 } }}>
          <TableCell
@@ -615,7 +621,7 @@ const RenderPercentage = ({ num }) => {
 ```
 
 ```js
-//BodyRow.js
+//hooks-helpers.js
 function numberFormat(num, style = 'currency', currency = 'USD') {
   let temp = 2;
   if (num < 1 && num > 0.0001) {

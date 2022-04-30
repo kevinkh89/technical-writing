@@ -9,23 +9,21 @@ function useCoinMarket() {
       // update: true,
     }));
   };
-  async function init() {
-    try {
-      const res = await fetch('/api');
-      const data = await res.json();
-      updateState(data);
-    } catch (err) {
-      console.log(err);
-    }
-  }
+
   useEffect(() => {
+    async function init() {
+      try {
+        const res = await fetch('/api');
+        const data = await res.json();
+        updateState(data);
+      } catch (err) {
+        console.log(err);
+      }
+    }
     init();
-    console.log('use effect');
     const id = setInterval(() => {
-      // setState(state => ({ ...state, update: false }));
-      console.log('new req');
       init();
-    }, 2 * 60 * 1000);
+    }, 5 * 60 * 1000);
     return () => clearInterval(id);
   }, []);
   return state;

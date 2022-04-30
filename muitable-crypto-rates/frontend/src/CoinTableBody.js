@@ -1,7 +1,8 @@
 import React, { useEffect, useRef } from 'react';
-import { Skeleton, TableBody, TableCell, TableRow, Box } from '@mui/material';
-import { useCoinMarket } from './other';
+import { Skeleton, TableBody, TableCell, TableRow, Box, Fade } from '@mui/material';
+import { useCoinMarket } from './hooks-helpers';
 import BodyRow from './BodyRow';
+import { SwitchTransition } from 'react-transition-group';
 
 const BodySkeleton = ({ rows, heads }) => {
   const rowArray = Array(rows).fill(null);
@@ -33,8 +34,8 @@ const CoinTableBody = ({ rowsPerPage, page, setDataLength }) => {
       setDataLength(data.length);
     }
     first.current = false;
-  }, [data]);
-  let isLoading2 = true;
+  }, [data, setDataLength]);
+  // let isLoading2 = true;
   return (
     <TableBody>
       {isLoading ? (
