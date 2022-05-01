@@ -1,6 +1,6 @@
 # building a real-time crypto currency info table with MUI(material-ui) Table and coinmarket cap API
 
-we are going to build a real-time crypto table that is responsive and would show lots of information about every crypto currency using the coinmarket cap `API`.we are going to build a simple express backend to fetch the informatin from coinmarket cap and cach the data with `Redis` and fetch them on a specific time period avoiding too much api calls
+we are going to build a real-time crypto table that is responsive and would show lots of information about every crypto currency using the coinmarket cap `API`.we are going to build a simple express backend to fetch the informatin from coinmarket cap and fetch them on a specific time period avoiding too much api calls
 
 Table of contents:
 
