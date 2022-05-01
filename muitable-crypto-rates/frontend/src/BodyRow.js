@@ -6,43 +6,41 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { numberFormat } from './hooks-helpers';
 import bit from './assets/1.png';
 
-const RenderPercentage = ({ num }) => {
-  return num > 0 ? (
-    <Box
-      display="flex"
-      justifyContent="flex-end"
-      alignItems="center"
-      color={'success.main'}
-    >
-      <ArrowDropUpIcon color={'success'} />
-      <span>{num}%</span>
-    </Box>
-  ) : (
-    <Box
-      display={'flex'}
-      justifyContent="flex-end"
-      alignItems="center"
-      color={'error.main'}
-    >
-      <ArrowDropDownIcon />
-      <span>{num.replace('-', '')}</span>
-    </Box>
-  );
-};
 const BodyRow = memo(({ row }) => {
-  // const [fade, setFade] = useState(true);
   const { name, quote } = row;
   const USD = quote.USD;
-  const price = numberFormat(USD.price);
+  const price = numberFormat(USD.price, 'currency');
   const percent_24 = USD.percent_change_24h.toFixed(2);
   const percent_7d = USD.percent_change_7d.toFixed(2);
   const circulating_supply = numberFormat(row.circulating_supply, 'decimal');
   const marketCap = numberFormat(USD.market_cap);
   const volume_24 = numberFormat(USD.volume_24h);
+  const renderPercentage = num => {
+    return num > 0 ? (
+      <Box
+        display="flex"
+        justifyContent="flex-end"
+        alignItems="center"
+        color={'success.main'}
+      >
+        <ArrowDropUpIcon color={'success'} />
+        <span>{num}%</span>
+      </Box>
+    ) : (
+      <Box
+        display={'flex'}
+        justifyContent="flex-end"
+        alignItems="center"
+        color={'error.main'}
+      >
+        <ArrowDropDownIcon />
+        <span> {num.replace('-', '')}%</span>
+      </Box>
+    );
+  };
   return (
     <TableRow sx={{ '& td': { width: 20 } }}>
       <TableCell
-        // padding="none"
         sx={theme => ({
           [theme.breakpoints.down('md')]: {
             position: 'sticky',
@@ -78,22 +76,18 @@ const BodyRow = memo(({ row }) => {
         </Box>
       </TableCell>
       <SwitchTransition>
-        <Fade key={price} unmountOnExit>
+        <Fade key={price}>
           <TableCell align="right">{price}</TableCell>
         </Fade>
       </SwitchTransition>
       <SwitchTransition>
         <Fade key={percent_24}>
-          <TableCell align="right">
-            <RenderPercentage num={percent_24} />
-          </TableCell>
+          <TableCell align="right">{renderPercentage(percent_24)}</TableCell>
         </Fade>
       </SwitchTransition>
       <SwitchTransition>
         <Fade key={percent_7d}>
-          <TableCell align="right">
-            <RenderPercentage num={percent_7d} />
-          </TableCell>
+          <TableCell align="right">{renderPercentage(percent_7d)}</TableCell>
         </Fade>
       </SwitchTransition>
       <TableCell align="right">{marketCap}</TableCell>

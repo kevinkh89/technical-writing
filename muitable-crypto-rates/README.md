@@ -2,7 +2,19 @@
 
 we are going to build a real-time crypto table that is responsive and would show lots of information about every crypto currency using the coinmarket cap `API`.we are going to build a simple express backend to fetch the informatin from coinmarket cap and cach the data with `Redis` and fetch them on a specific time period avoiding too much api calls
 
-## prequsite
+Table of contents:
+
+- [prepration](#prepration)
+
+  - [backend](#backend)
+  - [frontend](#frontend)
+  - [API key](#api-key)
+
+- [building the backend](#backend)
+
+- [building the frontend](#frontend)
+
+## prepration
 
 make a folder and call it `crypto-table` open your treminal and run the commands:
 powershell:
@@ -513,18 +525,42 @@ export default function CoinTableBody({ rowsPerpage, page }) {
 ```
 
 the api provides us substantial information about all aspects of crypto currency.in this example we are going to show 8 columns of information such as price,24 hours change,7 days change,ciculating supply,market cap,24h volumn(make sure to check out other properties too)
-there are not much to do in regards of processing the numbers.the percentages have fixed 2 fraction.price,market cap and curculating supply need to be fromated as a currency.
-we use the `Intl.NumberFormat` hence the `numberFormat` function(we'll get to it).
+there are not much to do in regards of processing the numbers.our percentages show two digits after the decimal point(`toFixed(2)`).price,market cap and curculating supply need to be fromated as a currency.
+we use the `Intl.NumberFormat` object hence the `numberFormat` function(we'll get to it).on `percent_change_24h` and `percent_change_7d`,we have a negative or positive number so based on that the `renderPercentages` return our percentages in red or green color with down or up arrows.I've used the default `mui` theme colors `success.main` and `error.main`.check out other fileds on their
+[default theme](https://mui.com/material-ui/customization/default-theme/)properties
 
 ```js
 //BodyRow.js
 export default functin BodyRow({ row }) {
    const { name, quote } = row;
    const USD = quote.USD;
-   const price = numberFormat(USD.price);
+   const price = numberFormat(USD.price,'currency');
    const percent_24 = USD.percent_change_24h.toFixed(2);
    const percent_7d = USD.percent_change_7d.toFixed(2);
    const circulating_supply = numberFormat(row.circulating_supply, 'decimal');
+   const renderPercentage = num => {
+    return num > 0 ? (
+      <Box
+        display="flex"
+        justifyContent="flex-end"
+        alignItems="center"
+        color={'success.main'}
+      >
+        <ArrowDropUpIcon color={'success'} />
+        <span>{num}%</span>
+      </Box>
+    ) : (
+      <Box
+        display={'flex'}
+        justifyContent="flex-end"
+        alignItems="center"
+        color={'error.main'}
+      >
+        <ArrowDropDownIcon />
+        <span> {num.replace('-', '')}</span>
+      </Box>
+    );
+  };
    return (
       <TableRow sx={{ '& td': { width: 20 } }}>
          <TableCell
@@ -571,7 +607,7 @@ export default functin BodyRow({ row }) {
          <SwitchTransition>
             <Fade key={percent_24}>
                <TableCell align="right">
-                  <RenderPercentage num={percent_24} />
+                  {renderPer}
                </TableCell>
             </Fade>
          </SwitchTransition>
@@ -593,36 +629,16 @@ export default functin BodyRow({ row }) {
 });
 ```
 
-```js
-//BodyRow.js
-const RenderPercentage = ({ num }) => {
-  return num > 0 ? (
-    <Box
-      display="flex"
-      justifyContent="flex-end"
-      alignItems="center"
-      color={'success.main'}
-    >
-      <ArrowDropUpIcon color={'success'} />
-      <span>{num}%</span>
-    </Box>
-  ) : (
-    <Box
-      display={'flex'}
-      justifyContent="flex-end"
-      alignItems="center"
-      color={'error.main'}
-    >
-      <ArrowDropDownIcon />
-      <span>{num.replace('-', '')}</span>
-    </Box>
-  );
-};
-```
+this function returns the number in currency or decimal style.maximal fraction digits has 3 conditions.
+
+1. numbers over 1 set to 2 digits after decimal point
+2. numbers with less than 4 digits returns the same number of digits after decimal point
+3. numbers with more than 4 digits returns up to 8 digits after decimal point
+   there other interesting properties on this [utility](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat) (great tool for internationalization).
 
 ```js
 //hooks-helpers.js
-function numberFormat(num, style = 'currency', currency = 'USD') {
+function numberFormat(num, style) {
   let temp = 2;
   if (num < 1 && num > 0.0001) {
     temp = 4;
@@ -632,7 +648,7 @@ function numberFormat(num, style = 'currency', currency = 'USD') {
   }
   let curr = new Intl.NumberFormat('en-US', {
     style,
-    currency,
+    currency: 'USD',
     maximumFractionDigits: temp,
     minimumFractionDigits: 2,
   }).format(num);
