@@ -10,13 +10,10 @@ import {
   Box,
 } from '@mui/material';
 import CoinTableBody from './CoinTableBody';
-export default function TableReal() {
+export default function CoinTable() {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(0);
   const [dataLength, setDataLength] = useState(0);
-  // const [height, setHeight] = useState('auto');
-  // const el = useRef();
-
   return (
     <Paper>
       <Box sx={{ overflowX: { xs: 'scroll', lg: 'visible' } }}>

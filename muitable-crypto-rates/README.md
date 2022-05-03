@@ -43,10 +43,10 @@ open the src folder and delete everything inside this folder except `index.js`.
 now `cd` into the `frontend` folder and install `@mui`:
 
 ```bash
-npm install @mui/material @emotion/styled @emotion/react
+npm install @mui/material @emotion/styled @emotion/react react-transition-group
 ```
 
-emotion packages are necessary for `mui`
+emotion packages are necessary for `mui` to work
 
 ### backend
 
@@ -223,15 +223,13 @@ const theme = createTheme({
     mode: 'dark',
   },
 });
-function App() {
+export default function App() {
   return (
     <ThemeProvider theme={theme}>
       <div>test</div>
     </ThemeProvider>
   );
 }
-
-export default App;
 ```
 
 use the `npm start` command to spin up the react server. visit `localhost:3000`you should see a text on the screen that says `test`.
@@ -284,7 +282,7 @@ export default function CoinTable() {
             </TableRow>
           </TableHead>
           <TableBody>
-            <CoinBody />
+            <CoinTableBody />
           </TableBody>
         </Table>
       </TableContainer>
@@ -302,9 +300,11 @@ export default function CoinTable() {
 }
 ```
 
+there are lots of data and functionality going on inside the table body.make a file named `CoinTableBody.js`.
+
 ```js
 //CoinBody.js
-export default function CoinBody() {
+export default function CoinTableBody() {
   return (
     <TableRow>
       <TableCell>1</TableCell>
@@ -329,6 +329,26 @@ export default function CoinBody() {
 - **TableCell**:`td` native element.notice we set the `TableCell` component to `align="right"` except the first one.it looks much better but it's a matter of opinion you can change it if you want.
 - **TableBody**:the `tbody` native element. that's where the data resign and changes periodically
 - **TablePagination**: it is our pagination control with all the good stuff. notice we have implemented the pagination outside the `TableContainer` because we don't want the pagination to be on the same scrolling area as the table. now the pagination won't scroll with the table on small devices.it has its own scroll bar. use the chrome devtools and toggle the device toolbar, you'll see in small devices the pagination won't scroll with the table while scrolling horizontally. we have hardcoded the count just for now.`rowsPerPageOptions` receive an array with options that the user can choose from.`rowsPerPage` is the initial number of rows per page.`onRowsPerPageChange` and `onPageChagne` are the functions that we leverage to change our Table UI.
+
+update the `App.js` file:
+
+```js
+import { createTheme, ThemeProvider } from '@mui/material';
+import React from 'react';
+import Table from './CoinTable';
+let theme = createTheme({
+  palette: {
+    mode: 'dark',
+  },
+});
+export default function App() {
+  return (
+    <ThemeProvider theme={theme}>
+      <Table />
+    </ThemeProvider>
+  );
+}
+```
 
 right now our markup is finished we have the look and it's time to introduce state and fetch data from our server.
 
@@ -367,7 +387,7 @@ function useCoinMarket() {
 }
 ```
 
-notice we have set two fields for the state `data`, `isLoading`.the `isLoading` is true initially so the table would show a skeleton and when the promise is fulfilled in the data, we set the `isLoading` to false.
+notice we have set two fields for the state `data`, `isLoading`.the `isLoading` is true initially so the table would show a skeleton and when the promise is fulfilled, we set the `isLoading` to false.also you can set a `isError` property to show some info on screen when the there is an error and send a request to an analytic endpoint to log your errors.
 we use `setInterval` to call init every 1 minute to update the table.
 
 > _this is a side note in regards to different approaches toward calling a function immediately and setting a time interval on the callee, you can skip this part if you want._
@@ -398,17 +418,20 @@ we use `setInterval` to call init every 1 minute to update the table.
 >
 > it immediately calls the function and then returns itself to be called on the next time interval
 
-now import the custom hook inside the `table.js` file. add two state hooks for `page` and `rowsPerPage` to handle the pagination state.
-pass them to `onRowsPerPageChange` and `onPageChange`.notice the `onPageChange` props callback have two arguments.the second argument is the new page sets by the user.pass `data`,`rowsPerPage`,`page` to `CoinBody` component
+add two state hooks for `page` and `rowsPerPage` to handle the pagination state.
+pass them to `onRowsPerPageChange` and `onPageChange`.notice the `onPageChange` props callback have two arguments.the second argument is the new page sets by the user.pass `rowsPerPage`,`page` to `CoinBody` component.we have to somehow send the data length data to the pagination component(the count prop).in order to achieve that,make a new state hook (`dataLength`,`setDataLength`) and pass down the `setDataLenght` to the `coninTableBody`
+
+> side note:
+> we could have use the `useCoinMarket` hook inside the `CointTable`.the benefit we gain from this approach is that we have moved the state and data fetching where exactly it's needed(it is widely known as co-locating).the `pagination` component needs the `dataLength` and we have exchange the data between the `paginitaion` and `CoinTableBody` through the parent component(CoinTable)
 
 ```js
-import { useCoinMarket } from './hooks-helpers';
-//other imports
+//imports
 //.
 //.
 export default function CoinTable() {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(0);
+  const [dataLength, setDataLength] = useState(0);
   return (
     <Paper>
       <TableContainer>
@@ -426,7 +449,11 @@ export default function CoinTable() {
             </TableRow>
           </TableHead>
           <TableBody>
-            <CoinTableBody data={data} rowsPerpage={rowsPerpage} page={page} />
+            <CoinTableBody
+              rowsPerpage={rowsPerpage}
+              page={page}
+              setDataLength={setDataLength}
+            />
           </TableBody>
         </Table>
       </TableContainer>
@@ -434,7 +461,7 @@ export default function CoinTable() {
         component={'div'}
         rowsPerPageOptions={[5, 10, 20]}
         rowsPerPage={5}
-        count={20}
+        count={dataLength}
         onRowsPerPageChange={e => {
           setRowsPerPage(parseInt(e.target.value));
           setPage(0);
@@ -449,13 +476,18 @@ export default function CoinTable() {
 }
 ```
 
+now import the custom hook inside the `CoinBody.js` file.
 on the `CoinTableBody` component we need to extract the proportion of the data based on the number of `page` and `rowsPerPage`.`isLoading` parameter is used to show a skeleton while data is loading.insdie `CoinBody` make a componenet named `BodySkeleton`.pass `rowsPerPAge` and number of heads.
 
 ```js
 //CoinBody.js
-export default function CoinTableBody({ rowsPerpage, page }) {
+export default function CoinTableBody({ rowsPerpage, page, setDataLength }) {
   const { data, isLoading, update } = useCoinMarket();
   const dataSliced = data.slice(page * rowsPerPage, (page + 1) * rowsPerPage);
+  useEffect(() => {
+    setDataLength(data.length);
+  }, [data, setDataLength]);
+
   return (
     <TableBody>
       {isLoading ? (
@@ -477,7 +509,7 @@ export default function CoinTableBody({ rowsPerpage, page }) {
 }
 ```
 
-first, we make two arrays based on the `rows` and `head` props to map over them and show the skeleton
+we make two arrays based on the `rows` and `head` props to map over them and show the skeleton
 
 ```js
 //CoinBody.js
@@ -507,7 +539,7 @@ const BodySkeleton = ({ rows, heads }) => {
 the body would house lots of data and components so it is wise to move them into a component. make a file named `BodyRow.js` and change the `CoinTableBody` like so:
 
 ```js
-//CoinBody.js
+//CoinTableBody.js
 
 export default function CoinTableBody({ rowsPerpage, page }) {
   const { data, isLoading, update } = useCoinMarket();
@@ -527,7 +559,8 @@ export default function CoinTableBody({ rowsPerpage, page }) {
 the API provides us substantial information about all aspects of cryptocurrency. in this example we are going to show 8 columns of information such as price,24 hours change,7 days change, circulating supply, market cap,24h_volumn(make sure to check out other properties too)
 there is not much to do in regards to processing the numbers. our percentages show two digits after the decimal point(`toFixed(2)`).price, market cap, and circulating supply need to be formatted as a currency.
 we use the `Intl.NumberFormat` object hence the `numberFormat` function(we'll get to it).on `percent_change_24h` and `percent_change_7d`, we have a negative or positive number so based on that the `renderPercentages` return our percentages in red or green color with down or up arrows. I've used the default `mui` theme colors `success.main` and `error.main`.check out other fields on their
-[default theme](https://mui.com/material-ui/customization/default-theme/)properties
+[default theme](https://mui.com/material-ui/customization/default-theme/)properties.
+switchTransition with `fade` component gives us a nice fading transition effect.whenever the `key` property on `fade` component changes, the switchTransition triggers the `in` prop of the `fade` component.
 
 ```js
 //BodyRow.js

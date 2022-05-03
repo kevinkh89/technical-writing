@@ -2,7 +2,6 @@ import React, { useEffect, useRef } from 'react';
 import { Skeleton, TableBody, TableCell, TableRow, Box, Fade } from '@mui/material';
 import { useCoinMarket } from './hooks-helpers';
 import BodyRow from './BodyRow';
-import { SwitchTransition } from 'react-transition-group';
 
 const BodySkeleton = ({ rows, heads }) => {
   const rowArray = Array(rows).fill(null);
