@@ -1,5 +1,4 @@
 import { useState } from 'react';
-// import TableContainer from '@mui/material/TableContainer';
 import Table from '@mui/material/Table';
 import {
   Paper,
@@ -7,7 +6,6 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  Box,
   TableContainer,
 } from '@mui/material';
 import CoinTableBody from './CoinTableBody';

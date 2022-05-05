@@ -541,6 +541,9 @@ the body would house lots of data and components so it is wise to move them into
 export default function CoinTableBody({ rowsPerpage, page }) {
   const { data, isLoading, update } = useCoinMarket();
   const dataSliced = data.slice(page * rowsPerPage, (page + 1) * rowsPerPage);
+  useEffect(() => {
+    setDataLength(data.length);
+  }, [data, setDataLength]);
   return (
     <TableBody>
       {isLoading ? (
@@ -553,22 +556,28 @@ export default function CoinTableBody({ rowsPerpage, page }) {
 }
 ```
 
-the API provides us substantial information about all aspects of cryptocurrency. in this example we are going to show 8 columns of information such as price,24 hours change,7 days change, circulating supply, market cap,24h_volumn(make sure to check out other properties too)
-there is not much to do in regards to processing the numbers. our percentages show two digits after the decimal point(`toFixed(2)`).price, market cap, and circulating supply need to be formatted as a currency.
-we use the `Intl.NumberFormat` object hence the `numberFormat` function(we'll get to it).on `percent_change_24h` and `percent_change_7d`, we have a negative or positive number so based on that the `renderPercentages` return our percentages in red or green color with down or up arrows. I've used the default `mui` theme colors `success.main` and `error.main`.check out other fields on their
+the API provides us substantial information about all aspects of cryptocurrency. In this example we are going to show 8 columns of information such as price,24 hours change,7 days change, circulating supply, market cap,24h\*volumn(make sure to check out other properties too)
+there is not much to do in regards to processing the numbers.We show two digits after the decimal point(`toFixed(2)`).price, market cap, and circulating supply need to be formatted as a currency.
+we use the `Intl.NumberFormat` object hence the `numberFormat` function(we'll get to it).on `percent_change_24h` and `percent_change_7d`,based on being negative or positive, the `renderPercentages` return our percentages in red or green color with down or up arrows. I've used the default `mui` theme colors `success.main` and `error.main`.check out other fields on their
 [default theme](https://mui.com/material-ui/customization/default-theme/)properties.
-switchTransition with `fade` component gives us a nice fading transition effect.whenever the `key` property on `fade` component changes, the switchTransition triggers the `in` prop of the `fade` component.
+switchTransition with the `fade` component gives us a nice fading transition effect. Whenever the `key` property on the `fade` component changes, the switchTransition triggers the `in` prop of the `fade` component.
+on two table cells we have used `sx` with `[theme.breakpoints.down('md')]`.it would introduce a breakpoint that triggers under the 900px width devices.it will set the row number,name and avatar in sticky position so the user can scroll horizantally and see the name alongside other colums.when using `sx` as a [function](https://mui.com/system/the-sx-prop/#callback-values) we can use the theme object.
 
-```js
+```jsx
 //BodyRow.js
 export default functin BodyRow({ row }) {
-   const { name, quote } = row;
-   const USD = quote.USD;
-   const price = numberFormat(USD.price,'currency');
-   const percent_24 = USD.percent_change_24h.toFixed(2);
-   const percent_7d = USD.percent_change_7d.toFixed(2);
-   const circulating_supply = numberFormat(row.circulating_supply, 'decimal');
-   const renderPercentage = num => {
+  const { name, quote } = row;
+  const USD = quote.USD;
+  const price = numberFormat(USD.price);
+  const percent_24 = USD.percent_change_24h.toFixed(2);
+  const percent_7d = USD.percent_change_7d.toFixed(2);
+  const circulating_supply = numberFormat(row.circulating_supply,{style:'decimal'});
+  const marketCap = numberFormat(USD.market_cap, {
+    notation: 'compact',
+    compactDisplay: 'short',
+  });
+  const volume_24 = numberFormat(USD.volume_24h);
+  const renderPercentage = num => {
     return num > 0 ? (
       <Box
         display="flex"
@@ -587,75 +596,72 @@ export default functin BodyRow({ row }) {
         color={'error.main'}
       >
         <ArrowDropDownIcon />
-        <span> {num.replace('-', '')}</span>
+        <span> {num.replace('-', '')}%</span>
       </Box>
     );
   };
-   return (
-      <TableRow sx={{ '& td': { width: 20 } }}>
-         <TableCell
-            // padding="none"
-            sx={theme => ({
-               [theme.breakpoints.down('md')]: {
-                  position: 'sticky',
-                  left: 0,
-                  zIndex: 10,
-                  backgroundColor: '#121212',
-               },
-            })}
-         >
-            {row.cmc_rank}
-         </TableCell>
-         <TableCell
-            padding="none"
-            sx={theme => ({
-               [theme.breakpoints.down('md')]: {
-                  position: 'sticky',
-                  left: 48,
-                  zIndex: 10,
-                  backgroundColor: '#121212',
-               },
-            })}
-         >
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-               <Avatar
-                  src={bit}
-                  sx={{
-                     width: 25,
-                     height: 25,
-                     mr: 1,
-                  }}
-               />
-               {name}&nbsp;{row.symbol}
-            </Box>
-         </TableCell>
-         <SwitchTransition>
-            <Fade key={price} unmountOnExit>
-               <TableCell align="right">{price}</TableCell>
-            </Fade>
-         </SwitchTransition>
-         <SwitchTransition>
-            <Fade key={percent_24}>
-               <TableCell align="right">
-                  {renderPer}
-               </TableCell>
-            </Fade>
-         </SwitchTransition>
-         <SwitchTransition>
-            <Fade key={percent_7d}>
-               <TableCell align="right">
-                  <RenderPercentage num={percent_7d} />
-               </TableCell>
-            </Fade>
-         </SwitchTransition>
-         <TableCell align="right">{numberFormat(USD.market_cap)}</TableCell>
+  return (
+    <TableRow sx={{ '& td': { width: 20 } }}>
+      <TableCell
+         sx={theme => ({
+          [theme.breakpoints.down('md')]: {
+            position: 'sticky',
+            left: 0,
+            zIndex: 10,
+            backgroundColor: '#121212',
+          },
+        })}
+      >
+        {row.cmc_rank}
+      </TableCell>
+      <TableCell
+        padding="none"
+        sx={theme => ({
+          [theme.breakpoints.down('md')]: {
+            position: 'sticky',
+            left: 48,
+            zIndex: 10,
+            backgroundColor: '#121212',
+          },
+        })}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Avatar
+            src={bit}
+            sx={{
+              width: 25,
+              height: 25,
+              mr: 1,
+            }}
+          />
+          <span>
+            {name}&nbsp;{row.symbol}
+          </span>
+        </Box>
+      </TableCell>
+      <SwitchTransition>
+        <Fade key={price}>
+          <TableCell align="right">{price}</TableCell>
+        </Fade>
+      </SwitchTransition>
+      <SwitchTransition>
+        <Fade key={percent_24}>
+          <TableCell align="right">{renderPercentage(percent_24)}</TableCell>
+        </Fade>
+      </SwitchTransition>
+      <SwitchTransition>
+        <Fade key={percent_7d}>
+          <TableCell align="right">{renderPercentage(percent_7d)}</TableCell>
+        </Fade>
+      </SwitchTransition>
+      <TableCell align="right">{marketCap}</TableCell>
 
-         <TableCell align="right">{numberFormat(USD.volume_24h)}</TableCell>
-         <TableCell align="right">
-            {circulating_supply}&nbsp;{row.symbol}
-         </TableCell>
-      </TableRow>
-   );
+      <TableCell align="right">{volume_24}</TableCell>
+      <TableCell align="right">
+        {circulating_supply}&nbsp;{row.symbol}
+      </TableCell>
+    </TableRow>
+  );
 });
 ```
 
@@ -665,10 +671,11 @@ function returns the number in currency or decimal style.maximumFractionDigits h
 2. numbers with less than 4 digits return the same number of digits after the decimal point
 3. numbers with more than 4 digits return up to 8 digits after a decimal point
    there other interesting properties on this [utility](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat) (a great tool for internationalization).
+   We have implemented a default option while we can add an object as a second parameter to modify the default. (for example, on the market cap we set `notaion:'compact',compactDisplay:'short'`, it will display the market cap in the short format followed by a `B` as in billions sign). we set the style of circulating supply to `decimal` to show the plain number
 
 ```js
 //hooks-helpers.js
-function numberFormat(num, style) {
+function numberFormat(num, options) {
   let temp = 2;
   if (num < 1 && num > 0.0001) {
     temp = 4;
@@ -676,13 +683,14 @@ function numberFormat(num, style) {
   if (num < 0.0001) {
     temp = 8;
   }
-  let curr = new Intl.NumberFormat('en-US', {
-    style,
+  let defaultOptions = {
+    style: 'currency',
     currency: 'USD',
     maximumFractionDigits: temp,
     minimumFractionDigits: 2,
-  }).format(num);
-
-  return curr;
+    notation: 'standard',
+    compactDisplay: 'long',
+  };
+  return new Intl.NumberFormat('en-US', { ...defaultOptions, ...options }).format(num);
 }
 ```

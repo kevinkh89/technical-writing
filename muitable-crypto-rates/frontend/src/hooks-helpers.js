@@ -29,7 +29,7 @@ function useCoinMarket() {
   return state;
 }
 
-function numberFormat(num, style = 'currency', currency = 'USD') {
+function numberFormat(num, options) {
   let temp = 2;
   if (num < 1 && num > 0.0001) {
     temp = 4;
@@ -37,14 +37,15 @@ function numberFormat(num, style = 'currency', currency = 'USD') {
   if (num < 0.0001) {
     temp = 8;
   }
-  let curr = new Intl.NumberFormat('en-US', {
-    style,
-    currency,
+  let defaultOptions = {
+    style: 'currency',
+    currency: 'USD',
     maximumFractionDigits: temp,
     minimumFractionDigits: 2,
-  }).format(num);
-
-  return curr;
+    notation: 'standard',
+    compactDisplay: 'long',
+  };
+  return new Intl.NumberFormat('en-US', { ...defaultOptions, ...options }).format(num);
 }
 
 export { useCoinMarket, numberFormat };

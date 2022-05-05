@@ -27,14 +27,9 @@ const BodySkeleton = ({ rows, heads }) => {
 const CoinTableBody = ({ rowsPerPage, page, setDataLength }) => {
   const { data, isLoading, update } = useCoinMarket();
   const dataSliced = data.slice(page * rowsPerPage, (page + 1) * rowsPerPage);
-  const first = useRef(true);
   useEffect(() => {
-    if (first.current) {
-      setDataLength(data.length);
-    }
-    first.current = false;
+    setDataLength(data.length);
   }, [data, setDataLength]);
-  // let isLoading2 = true;
   return (
     <TableBody>
       {isLoading ? (
@@ -45,5 +40,4 @@ const CoinTableBody = ({ rowsPerPage, page, setDataLength }) => {
     </TableBody>
   );
 };
-const CoinTableBodyMemo = React.memo(CoinTableBody);
-export default CoinTableBodyMemo;
+export default CoinTableBody;
