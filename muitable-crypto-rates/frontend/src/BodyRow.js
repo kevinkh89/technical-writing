@@ -74,7 +74,9 @@ const BodyRow = memo(({ row }) => {
               mr: 1,
             }}
           />
-          {name}&nbsp;{row.symbol}
+          <span>
+            {name}&nbsp;{row.symbol}
+          </span>
         </Box>
       </TableCell>
       <SwitchTransition>

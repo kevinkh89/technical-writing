@@ -8,6 +8,7 @@ import {
   TablePagination,
   TableRow,
   Box,
+  TableContainer,
 } from '@mui/material';
 import CoinTableBody from './CoinTableBody';
 export default function CoinTable() {
@@ -16,12 +17,8 @@ export default function CoinTable() {
   const [dataLength, setDataLength] = useState(0);
   return (
     <Paper>
-      <Box sx={{ overflowX: { xs: 'scroll', lg: 'visible' } }}>
-        <Table
-          stickyHeader
-          sx={{ minWidth: 700, '& td': { fontWeight: 600 } }}
-          // size="small"
-        >
+      <TableContainer>
+        <Table sx={{ minWidth: 700, '& td': { fontWeight: 600 } }}>
           <TableHead>
             <TableRow>
               <TableCell>#</TableCell>
@@ -32,7 +29,6 @@ export default function CoinTable() {
               <TableCell align="right">Market Cap</TableCell>
               <TableCell align="right">Volume(24h)</TableCell>
               <TableCell align="right">Circulating supply</TableCell>
-              {/* <TableCell>Volume(24h)</TableCell> */}
             </TableRow>
           </TableHead>
           <CoinTableBody
@@ -41,7 +37,7 @@ export default function CoinTable() {
             setDataLength={setDataLength}
           />
         </Table>
-      </Box>
+      </TableContainer>
       <TablePagination
         component={'div'}
         rowsPerPageOptions={[5, 10, 20]}
