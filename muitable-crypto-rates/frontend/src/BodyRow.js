@@ -4,7 +4,7 @@ import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { numberFormat } from './hooks-helpers';
 import bit from './assets/1.png';
-const BodyRow = ({ row }) => {
+const BodyRow = ({ row, isPending }) => {
   const { name, quote } = row;
   const USD = quote.USD;
   const price = numberFormat(USD.price);

@@ -48,4 +48,50 @@ function numberFormat(num, options) {
   return new Intl.NumberFormat('en-US', { ...defaultOptions, ...options }).format(num);
 }
 
-export { useCoinMarket, numberFormat };
+async function init() {
+  try {
+    const res = await fetch('/api');
+    const data = await res.json();
+    // updateState(data);
+    // setState({
+    //   data: data,
+    //   isLoading: false,
+    // });
+    // cb(data);
+    // cb(data.length);
+    return data;
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+const wrapper = promise => {
+  let status = 'pending';
+  let result;
+  let suspender = promise.then(
+    resolve => {
+      status = 'success';
+      result = resolve;
+    },
+    reject => {
+      status = 'reject';
+      result = reject;
+    }
+  );
+  return {
+    read() {
+      if (status === 'pending') {
+        throw suspender;
+      } else if (status === 'success') {
+        return result;
+      } else if (status === 'reject') {
+        throw result;
+      }
+    },
+  };
+};
+function fetchData() {
+  const data = wrapper(init());
+  return data;
+}
+export { useCoinMarket, numberFormat, fetchData };
