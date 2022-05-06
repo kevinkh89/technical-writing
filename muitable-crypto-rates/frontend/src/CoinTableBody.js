@@ -1,8 +1,8 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Skeleton, TableBody, TableCell, TableRow, Box, Fade } from '@mui/material';
-import { useCoinMarket } from './hooks-helpers';
+import { useCoinMarket, init, fetchData } from './hooks-helpers';
 import BodyRow from './BodyRow';
-
+// let dataInit = fetchData();
 const BodySkeleton = ({ rows, heads }) => {
   const rowArray = Array(rows).fill(null);
   const cellArray = Array(heads).fill(null);
@@ -25,17 +25,18 @@ const BodySkeleton = ({ rows, heads }) => {
 };
 
 const CoinTableBody = ({ rowsPerPage, page, setDataLength }) => {
-  const { data, isLoading, update } = useCoinMarket();
+  const { data, isLoading } = useCoinMarket();
   const dataSliced = data.slice(page * rowsPerPage, (page + 1) * rowsPerPage);
   useEffect(() => {
     setDataLength(data.length);
-  }, [data, setDataLength]);
+  }, [data.length]);
+  console.log('body');
   return (
     <TableBody>
       {isLoading ? (
         <BodySkeleton rows={rowsPerPage} heads={8} />
       ) : (
-        dataSliced.map(row => <BodyRow key={row.id} row={row} update={update} />)
+        dataSliced.map(row => <BodyRow key={row.id} row={row} />)
       )}
     </TableBody>
   );

@@ -1,21 +1,21 @@
 import { useState, useEffect } from 'react';
 
 function useCoinMarket() {
-  const [state, setState] = useState({ data: [], isLoading: true, update: false });
+  const [state, setState] = useState({ data: [], isLoading: true });
   const updateState = data => {
-    setState(state => ({
-      data: data ? data : state.data,
+    setState({
+      data: data,
       isLoading: false,
-      // update: true,
-    }));
+    });
   };
-
   useEffect(() => {
     async function init() {
       try {
         const res = await fetch('/api');
         const data = await res.json();
         updateState(data);
+        // cb(data);
+        // cb(data.length);
       } catch (err) {
         console.log(err);
       }
@@ -23,7 +23,7 @@ function useCoinMarket() {
     init();
     const id = setInterval(() => {
       init();
-    }, 5 * 60 * 1000);
+    }, 0.5 * 60 * 1000);
     return () => clearInterval(id);
   }, []);
   return state;
