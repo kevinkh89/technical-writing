@@ -1,9 +1,7 @@
-import React, { useEffect, useRef } from 'react';
-import { Skeleton, TableBody, TableCell, TableRow, Box, Fade } from '@mui/material';
+import React, { memo, useEffect } from 'react';
+import { Skeleton, TableBody, TableCell, TableRow, Box } from '@mui/material';
 import { useCoinMarket } from './hooks-helpers';
 import BodyRow from './BodyRow';
-import { SwitchTransition } from 'react-transition-group';
-
 const BodySkeleton = ({ rows, heads }) => {
   const rowArray = Array(rows).fill(null);
   const cellArray = Array(heads).fill(null);
@@ -25,26 +23,20 @@ const BodySkeleton = ({ rows, heads }) => {
   ));
 };
 
-const CoinTableBody = ({ rowsPerPage, page, setDataLength }) => {
-  const { data, isLoading, update } = useCoinMarket();
+export const CoinTableBody = memo(({ rowsPerPage, page, setDataLength }) => {
+  const { data, isLoading } = useCoinMarket();
   const dataSliced = data.slice(page * rowsPerPage, (page + 1) * rowsPerPage);
-  const first = useRef(true);
   useEffect(() => {
-    if (first.current) {
-      setDataLength(data.length);
-    }
-    first.current = false;
-  }, [data, setDataLength]);
-  // let isLoading2 = true;
+    setDataLength(data.length);
+  }, [data.length]);
+  console.log('body');
   return (
     <TableBody>
       {isLoading ? (
         <BodySkeleton rows={rowsPerPage} heads={8} />
       ) : (
-        dataSliced.map(row => <BodyRow key={row.id} row={row} update={update} />)
+        dataSliced.map(row => <BodyRow key={row.id} row={row} />)
       )}
     </TableBody>
   );
-};
-const CoinTableBodyMemo = React.memo(CoinTableBody);
-export default CoinTableBodyMemo;
+});

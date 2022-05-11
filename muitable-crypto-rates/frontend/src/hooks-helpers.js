@@ -1,15 +1,13 @@
 import { useState, useEffect } from 'react';
 
 function useCoinMarket() {
-  const [state, setState] = useState({ data: [], isLoading: true, update: false });
+  const [state, setState] = useState({ data: [], isLoading: true });
   const updateState = data => {
-    setState(state => ({
-      data: data ? data : state.data,
+    setState({
+      data: data,
       isLoading: false,
-      // update: true,
-    }));
+    });
   };
-
   useEffect(() => {
     async function init() {
       try {
@@ -23,13 +21,13 @@ function useCoinMarket() {
     init();
     const id = setInterval(() => {
       init();
-    }, 5 * 60 * 1000);
+    }, 10 * 60 * 1000);
     return () => clearInterval(id);
   }, []);
   return state;
 }
 
-function numberFormat(num, style) {
+function numberFormat(num, options) {
   let temp = 2;
   if (num < 1 && num > 0.0001) {
     temp = 4;
@@ -37,14 +35,15 @@ function numberFormat(num, style) {
   if (num < 0.0001) {
     temp = 8;
   }
-  let curr = new Intl.NumberFormat('en-US', {
-    style,
+  let defaultOptions = {
+    style: 'currency',
     currency: 'USD',
     maximumFractionDigits: temp,
     minimumFractionDigits: 2,
-  }).format(num);
-
-  return curr;
+    notation: 'standard',
+    compactDisplay: 'long',
+  };
+  return new Intl.NumberFormat('en-US', { ...defaultOptions, ...options }).format(num);
 }
 
 export { useCoinMarket, numberFormat };

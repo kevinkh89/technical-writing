@@ -1,5 +1,4 @@
 import { useState } from 'react';
-// import TableContainer from '@mui/material/TableContainer';
 import Table from '@mui/material/Table';
 import {
   Paper,
@@ -7,24 +6,19 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  Box,
+  TableContainer,
 } from '@mui/material';
+
 import CoinTableBody from './CoinTableBody';
-export default function TableReal() {
+export default function CoinTable() {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(0);
   const [dataLength, setDataLength] = useState(0);
-  // const [height, setHeight] = useState('auto');
-  // const el = useRef();
-
+  console.log('table');
   return (
     <Paper>
-      <Box sx={{ overflowX: { xs: 'scroll', lg: 'visible' } }}>
-        <Table
-          stickyHeader
-          sx={{ minWidth: 700, '& td': { fontWeight: 600 } }}
-          // size="small"
-        >
+      <TableContainer>
+        <Table sx={{ minWidth: 700, '& td': { fontWeight: 600 } }}>
           <TableHead>
             <TableRow>
               <TableCell>#</TableCell>
@@ -35,7 +29,6 @@ export default function TableReal() {
               <TableCell align="right">Market Cap</TableCell>
               <TableCell align="right">Volume(24h)</TableCell>
               <TableCell align="right">Circulating supply</TableCell>
-              {/* <TableCell>Volume(24h)</TableCell> */}
             </TableRow>
           </TableHead>
           <CoinTableBody
@@ -44,7 +37,7 @@ export default function TableReal() {
             setDataLength={setDataLength}
           />
         </Table>
-      </Box>
+      </TableContainer>
       <TablePagination
         component={'div'}
         rowsPerPageOptions={[5, 10, 20]}
