@@ -543,7 +543,7 @@ export default function CoinTableBody({ rowsPerpage, page }) {
   const dataSliced = data.slice(page * rowsPerPage, (page + 1) * rowsPerPage);
   useEffect(() => {
     setDataLength(data.length);
-  }, [data, setDataLength]);
+  }, [data.length]);
   return (
     <TableBody>
       {isLoading ? (
@@ -556,12 +556,13 @@ export default function CoinTableBody({ rowsPerpage, page }) {
 }
 ```
 
-the API provides us substantial information about all aspects of cryptocurrency. In this example we are going to show 8 columns of information such as price,24 hours change,7 days change, circulating supply, market cap,24h\*volumn(make sure to check out other properties too)
+the API provides us substantial information about all aspects of cryptocurrency. In this example we are going to show 8 columns of information such as price,24 hours change,7 days change, circulating supply, market cap,24h volumne(make sure to check out other properties too)
 there is not much to do in regards to processing the numbers.We show two digits after the decimal point(`toFixed(2)`).price, market cap, and circulating supply need to be formatted as a currency.
 we use the `Intl.NumberFormat` object hence the `numberFormat` function(we'll get to it).on `percent_change_24h` and `percent_change_7d`,based on being negative or positive, the `renderPercentages` return our percentages in red or green color with down or up arrows. I've used the default `mui` theme colors `success.main` and `error.main`.check out other fields on their
 [default theme](https://mui.com/material-ui/customization/default-theme/)properties.
 switchTransition with the `fade` component gives us a nice fading transition effect. Whenever the `key` property on the `fade` component changes, the switchTransition triggers the `in` prop of the `fade` component.
 on two table cells we have used `sx` with `[theme.breakpoints.down('md')]`.it would introduce a breakpoint that triggers under the 900px width devices.it will set the row number,name and avatar in sticky position so the user can scroll horizantally and see the name alongside other colums.when using `sx` as a [function](https://mui.com/system/the-sx-prop/#callback-values) we can use the theme object.
+(`https://s2.coinmarketcap.com/static/img/coins/64x64/` is an endpoint on coinmarketcap for coin icons, just add the coin `id` at the end)
 
 ```jsx
 //BodyRow.js
@@ -665,7 +666,7 @@ export default functin BodyRow({ row }) {
 });
 ```
 
-function returns the number in currency or decimal style.maximumFractionDigits has 3 conditions.
+`numberFormat`function returns the number in currency or decimal style.maximumFractionDigits has 3 conditions.
 
 1. numbers over 1 set to 2 digits after decimal point
 2. numbers with less than 4 digits return the same number of digits after the decimal point
