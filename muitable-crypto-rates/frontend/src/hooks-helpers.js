@@ -14,8 +14,6 @@ function useCoinMarket() {
         const res = await fetch('/api');
         const data = await res.json();
         updateState(data);
-        // cb(data);
-        // cb(data.length);
       } catch (err) {
         console.log(err);
       }
@@ -23,7 +21,7 @@ function useCoinMarket() {
     init();
     const id = setInterval(() => {
       init();
-    }, 0.5 * 60 * 1000);
+    }, 10 * 60 * 1000);
     return () => clearInterval(id);
   }, []);
   return state;

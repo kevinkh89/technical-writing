@@ -3,7 +3,6 @@ import { Fade, TableCell, TableRow, Box, Avatar } from '@mui/material';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { numberFormat } from './hooks-helpers';
-import bit from './assets/1.png';
 const BodyRow = ({ row }) => {
   const { name, quote } = row;
   const USD = quote.USD;
@@ -67,7 +66,7 @@ const BodyRow = ({ row }) => {
       >
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Avatar
-            src={bit}
+            src={`https://s2.coinmarketcap.com/static/img/coins/64x64/${row.id}.png`}
             sx={{
               width: 25,
               height: 25,

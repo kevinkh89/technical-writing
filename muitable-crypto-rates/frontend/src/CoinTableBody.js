@@ -1,8 +1,7 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Skeleton, TableBody, TableCell, TableRow, Box, Fade } from '@mui/material';
-import { useCoinMarket, init, fetchData } from './hooks-helpers';
+import React, { memo, useEffect } from 'react';
+import { Skeleton, TableBody, TableCell, TableRow, Box } from '@mui/material';
+import { useCoinMarket } from './hooks-helpers';
 import BodyRow from './BodyRow';
-// let dataInit = fetchData();
 const BodySkeleton = ({ rows, heads }) => {
   const rowArray = Array(rows).fill(null);
   const cellArray = Array(heads).fill(null);
@@ -24,7 +23,7 @@ const BodySkeleton = ({ rows, heads }) => {
   ));
 };
 
-const CoinTableBody = ({ rowsPerPage, page, setDataLength }) => {
+export const CoinTableBody = memo(({ rowsPerPage, page, setDataLength }) => {
   const { data, isLoading } = useCoinMarket();
   const dataSliced = data.slice(page * rowsPerPage, (page + 1) * rowsPerPage);
   useEffect(() => {
@@ -40,5 +39,4 @@ const CoinTableBody = ({ rowsPerPage, page, setDataLength }) => {
       )}
     </TableBody>
   );
-};
-export default CoinTableBody;
+});
