@@ -23,7 +23,7 @@ const BodySkeleton = ({ rows, heads }) => {
   ));
 };
 
-export const CoinTableBody = memo(({ rowsPerPage, page, setDataLength }) => {
+const CoinTableBody = memo(({ rowsPerPage, page, setDataLength }) => {
   const { data, isLoading } = useCoinMarket();
   const dataSliced = data.slice(page * rowsPerPage, (page + 1) * rowsPerPage);
   useEffect(() => {
@@ -40,3 +40,4 @@ export const CoinTableBody = memo(({ rowsPerPage, page, setDataLength }) => {
     </TableBody>
   );
 });
+export default CoinTableBody;
