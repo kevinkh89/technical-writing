@@ -194,14 +194,14 @@ the `Rotate.module.css`
   transform: rotateY(0);
 }
 .enterActive {
-  transform: perspective(150px) rotateY(180deg);
+  transform: perspective(150px) rotateY(-180deg);
   transition: transform 500ms ease-in-out;
 }
 .enterDone {
-  transform: rotateY(180deg);
+  transform: rotateY(-180deg);
 }
 .exit {
-  transform: rotateY(180deg);
+  transform: rotateY(-180deg);
 }
 .exitActive {
   transform: perspective(150px) rotateY(0);
@@ -314,9 +314,5 @@ the transitioning:
 ```
 
 you can play with `width` and `height` of the emerging circle and the `right` and `top` property of the container to achieve the desire layout.the current ones shows a circle emerging while the circle won't fully cover the card.there is a curve on the botton left.I think it is visually more apealing.
-
-### fixing a bug
-
-there is bug with in the card back face.clicking the close butto won't do anything and the cursor don't even change as we hover on the button.that's because the `hint` button on the front face is actually in front of the close button at the back.(I know a little bit confusing)
 
 ## SwitchTransition
