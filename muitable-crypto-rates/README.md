@@ -695,3 +695,7 @@ function numberFormat(num, options) {
   return new Intl.NumberFormat('en-US', { ...defaultOptions, ...options }).format(num);
 }
 ```
+## Now, Start the Server with Frontend and Backend 
+* Follow these Steps 
+* Step 1 : -
+
