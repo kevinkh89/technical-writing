@@ -316,3 +316,10 @@ the transitioning:
 you can play with `width` and `height` of the emerging circle and the `right` and `top` property of the container to achieve the desire layout.the current ones shows a circle emerging while the circle won't fully cover the card.there is a curve on the botton left.I think it is visually more apealing.
 
 ## SwitchTransition
+
+this component only accepts the `CSSTrasnition` or `Transition` component as a child.by changing the `key` prop on the the `SwitchTansition` changes the `in` prop those components.so no need to specify the `in` prop on the child component(e.g `CSSTrasnition` or `Transition` ).the phases are the same as we disscused earlier but with a little difference.it triggers the child component to change it's phase in such manner:
+
+exit ==> exiting ===> exited ===> enter ===> entering ===> entered
+
+it starts with the `exit` phase then work it's way toward the `entered` phase.that's what this component is build for **switching between components or states.it waits for the component to rich it's `exitied` phase then start the entering phase**.
+in this example we are going to build a simple slideshow with this component.
